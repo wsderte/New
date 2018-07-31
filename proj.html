@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Speech Detection</title>
+</head>
+<body>
+
+  <div class="words" contenteditable>
+  </div>
+
+<script>
+ window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; // проверяем есть ли доступ к API
+  const recognition = new SpeechRecognition(); // создаём новый обьект с помощью конструктора SpeechRecognition()
+  recognition.interimResults = true; // контроллирует следует ли возвращать промежуточные результаты(true) тоесть те что ещё не завершены.
+  recognition.lang = 'en-US'; // указываем язык
+  
+  let p = document.createElement('p'); // создаём новый объект с tagName = 'p' 
+  const words = document.querySelector('.words'); // возвращает первый елемент внутри документа (.words)
+  words.appendChild(p); // добавляем элемент в конец списка дочерних элементов родителя  
+  recognition.addEventListener('result', e => { // добавляем слушателя на событие 
+    const transcript = Array.from(e.results) // создаём новый экземпляр Array из массивоподобного обьекта
+      .map(result => result[0]) // метод map создаёт новый массив на основе существующего и применить к его елементам некую функцию
+      .map(result => result.transcript)
+      .join('');  // соединяем в строку массив 
+      p.textContent = transcript; 
+      if (e.results[0].isFinal) {    // если промежуточные результаты завершены
+        p = document.createElement('p'); // создаём новый объект с tagName = 'p' 
+        words.appendChild(p); // возвращает первый елемент внутри документа (.words)
+      }
+  });
+  recognition.addEventListener('end', recognition.start); // добавили событие 'end' 
+  recognition.start(); // метод который начинает работу speechRecogniton
+</script>
+
+
+  <style>
+    html {
+      font-size: 10px;
+    }
+    body {
+      background:#ffc600;
+      font-family: 'helvetica neue';
+      font-weight: 200;
+      font-size: 20px;
+    }
+    .words {
+      max-width:500px;
+      margin:50px auto;
+      background:white;
+      border-radius:5px;
+      box-shadow:10px 10px 0 rgba(0,0,0,0.1);
+      padding:1rem 2rem 1rem 5rem;
+      background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
+      background-size: 100% 3rem;
+      position: relative;
+      line-height:3rem;
+    }
+    p {
+      margin: 0 0 3rem;
+    }
+    .words:before {
+      content: '';
+      position: absolute;
+      width: 4px;
+      top: 0;
+      left: 30px;
+      bottom: 0;
+      border: 1px solid;
+      border-color: transparent #efe4e4;
+    }
+  </style>
+
+</body>
+</html>
